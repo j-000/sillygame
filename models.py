@@ -109,7 +109,7 @@ class Game(Base):
     @staticmethod
     def get_previous_game():
         completed_games = Game.query.filter_by(started=True, ended=True).all()
-        sorted_games = sorted(completed_games, key=lambda g: g.ended_timestamp, reverse=True)
+        sorted_games = sorted(completed_games, key=lambda g: g.id, reverse=True)
         previous_game = sorted_games[0] if sorted_games else None
         return previous_game
 
