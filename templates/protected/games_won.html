@@ -1,0 +1,70 @@
+{% extends 'layout.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block css %}
+
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+  <div class="row text-center">
+    <div class="col-md-7 m-auto">
+      <h2>Games Won</h2>
+      <div class="alert alert-warning">
+        To claim your awards, please contact support at <strong> <a href="mailto:iwon@sillygames.co.uk">iwon@sillygames.co.uk</a></strong>
+      </div>
+      <div id="gamesWon"></div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    function getUserGames(){
+      $.getJSON('/api/users/{{ logged_user.id }}/games', (g) => {
+        console.log(g)
+        g.forEach(game => {
+          if(game.winner == parseInt('{{ logged_user.id }}')){
+            let g = game;
+            $('#gamesWon').append(`
+              <div class="card">  
+                <div class="card-body">
+                  <h5 class="card-title"><i class="fas fa-medal text-success"></i> Game #${g.id}</h5>
+                  <p class="card-title text-muted">${g.prize}</p>
+                  <div class="row">
+                    <div class="col-6">
+                      <table class="table table-sm">
+                        <tbody>
+                          <tr>
+                            <td><strong>Started</strong></td>
+                            <td>${g.begin_date}</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Ended</strong></td>
+                            <td>${g.end_date}</td>
+                          </tr>
+                          <tr>
+                            <td><strong>Players</strong></td>
+                            <td>${g.players_count}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div class="col-6 text-center">
+                      <div>
+                        <img src="${g.prize_image}" alt="" height=100/>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `)
+          }
+        });
+      })
+    }
+    getUserGames()
+</script>
+{% endblock %}

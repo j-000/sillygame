@@ -1,0 +1,64 @@
+{% extends 'layout.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block css %}
+<style>
+  .card{
+    box-shadow: 0 10px 6px -6px #777;
+  }
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-md-5 m-auto">
+        <h2>Login</h2>
+        <div class="card">
+          <div class="card-body">
+            <form action="javascript:void(0)" id="loginForm">
+              <label for="email">Email</label>
+              <input class="form-control mb-2" type="text" name="email" id="email">
+              <label for="password">Password</label>
+              <input class="form-control mb-2" type="password" name="password" id="password">
+              <button class="btn-info btn" onclick="login()">Login</button>
+            </form>
+            <p class="text-danger" id="errors"></p>
+            <p class="text-success" id="success"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  function login(){
+    let email = $('#email').val();
+    let password = $('#password').val();
+    if(email&&password){
+      $.postJSON(
+        `${SERVER}/api/login`, {
+          email, password
+        },
+        (response) => {
+          if(!response.success){
+            $('#errors').text(response.message);
+          }else{
+            clearForm('loginForm')
+            window.location.href = '/profile'
+          }
+        }
+      )
+    }else{
+      $('#errors').text('Complete all fields.')
+    }
+    setTimeout(() => {
+      $('#errors').text('');
+      $('#success').text('');
+    }, 3000);
+  }
+</script>
+{% endblock %}

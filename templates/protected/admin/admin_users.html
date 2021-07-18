@@ -1,0 +1,63 @@
+{% extends 'layout.html' %}
+
+{% block title %}Admin | Users{% endblock %}
+
+{% block css %} {% endblock %}
+
+{% block body %}
+  <div class="row text-center">
+    <div class="col">
+      <h2 class="text-center">Users</h2>
+      <p class="text-center">Total: <span id="totalUsers"></span></p>
+      <div id="tableWrapper">
+        <table class="table text-center table-sm" id="usersTable">
+          <thead>
+            <tr>
+              <th>Id</th>
+              <th>Name</th>
+              <th>Email</th>
+            </tr>
+          </thead>
+          <tbody id='usersTableBody'></tbody>
+        </table>
+        <div class="container">
+          <nav aria-label="..." class="m-auto" style="width: max-content;">
+            <ul class="pagination">
+                <li class="page-item">
+                  <a id="previousLink" class="page-link" href="javascript:void(0)" tabindex="-1">Previous</a>
+                </li>
+              <li class="page-item disabled"><a class="page-link" href="javascript:void(0)">&nbsp;</a></li>
+              <li class="page-item disabled"><a class="page-link" href="javascript:void(0)">&nbsp;</a></li>
+              <li class="page-item disabled"><a class="page-link" href="javascript:void(0)">&nbsp;</a></li>
+              <li class="page-item">        
+                <a id="nextLink" class="page-link" href="javascript:void(0)" tabindex="-1">Next</a>
+              </li>
+            </ul>
+          </nav>
+        </div> 
+      </div>
+    </div>
+  </div> 
+{% endblock %}
+
+{% block js %}
+<script>
+  function getUsers(url){
+    $.getJSON(url, (response) => {
+      $('#totalUsers').text(response.count);
+      let html = '';
+      response.results.forEach(u => {
+        html += `<tr>
+                  <td>${u.id}</td>
+                  <td><a href="/admin/users/${u.id}">${u.name}</a></td>
+                  <td>${u.email}</td>
+                </tr>`
+      });
+      $('#usersTableBody').html(html);
+      $('#previousLink').attr('href', `javascript:getUsers("${response.previous}");`);
+      $('#nextLink').attr('href', `javascript:getUsers("${response.next}");`);
+    })
+  }
+  getUsers(`${SERVER}/api/users?start=1&limit=20`);
+</script>
+{% endblock %}

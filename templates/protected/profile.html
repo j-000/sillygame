@@ -1,0 +1,98 @@
+{% extends 'layout.html' %}
+
+{% block title %}Profile{% endblock %}
+
+{% block css %}
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid mt-5">
+  <div class="row">
+    <div class="col-md-7 m-auto" id="userCardContainer"></div>
+  </div>
+  <div class="row">
+    <div class="col m-auto text-center pt-5" id="liveGameButton"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  function getUser(){
+    $.getJSON('/api/users/{{ logged_user.id }}', (u) => {
+      let html = `
+        <div class="card p-4">
+          <div class="card-body text-center">
+            <h2 class="card-title">${u.name}</h2>
+            <h4 class="text-muted">${u.email}</h4>`;
+      if(u.is_admin){
+        html += '<p><span class="badge-warning badge">Admin</span></p>';
+      }
+      html += `
+          </div>
+          <div class="row text-center">
+            <div class="col">
+              <h4 class="text-center"><span class="badge-info badge">Games</span></h4>
+              <div class="row">
+                <div class="col">
+                  <h3>${u.games_played}</h3>
+                  <p><i class="fas fa-gamepad"></i> Played</p>
+                </div>
+                <div class="col">
+                  <h3><a href="/games/won" >${u.games_won}</a></h3>
+                  <p><i class="fas fa-medal"></i> Won</p>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <h4 class="text-center"><span class="badge-info badge">Coins</span></h4>
+              <div class="row">
+                <div class="col">
+                  <h3>${u.normal_coins}</h3>
+                  <p><i class="fas fa-coins"></i> Normal</p>
+                </div>
+                <div class="col">
+                  <h3>${u.rare_coins}</h3>
+                  <p><i class="far fa-gem"></i> Rare</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`;
+        $('#userCardContainer').append(html);
+    });
+  }
+
+  function joinGame(){
+    $.postJSON('/api/games/live', {}, (g) => {
+      if(g.success){
+        window.location.reload();
+      }
+    });
+  }
+
+  function getCurrentGame(){
+    $.getJSON('/api/games/live', (g) => {
+      if(g.message){
+        $('#liveGameButton').html(`<h4 class="text-center mt-5">${g.message}</h4>`)
+      }else{
+        let html = '';
+        if(!g.joined_game){
+          html += `<p id="liveGameP" class="text-center mb-2"><a href='javascript:joinGame()' class='btn btn-success btn-lg'>Enter Game!</a></p>`   
+        }else{
+          html += `<a href='/play' class='btn btn-success btn-lg'>Play!</a>`
+        }
+        html += `
+          <h3 class="mt-4">${g.prize}</h3>
+          <img src="${g.prize_image}" height=200 />
+        `;
+        $('#liveGameButton').html(html)
+      }
+    })
+  }
+
+  getUser();
+  getCurrentGame();
+  setInterval(getCurrentGame, 30000);
+</script>
+{% endblock %}

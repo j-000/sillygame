@@ -1,0 +1,123 @@
+{% extends 'layout.html' %}
+
+{% block title %}{% endblock %}
+
+{% block css %}{% endblock %}
+
+{% block body %}
+<div class="container pt-5">
+  <div class="row">
+    <div class="col">
+      <div class="card">
+        <div class="card-body">
+          <h5 class="card-title">Game #<span id="gameId"></span></h5>
+          <p class="card-text" id="gameStatus"></p>
+          <div class="row">
+            <div class="col-6">
+              <table class="table table-sm">
+                <tbody id="gameTableBody"></tbody>
+              </table>
+            </div>
+            <div class="col-6 text-center">
+              <div id="prizeImageContainer"></div>
+              <hr>
+              <div id="prizeImageForm"></div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col">
+              <button class="btn btn-success" onclick="performAction('start')">Start</button>
+            </div>
+            <div class="col">
+              <button class="btn btn-danger" onclick="performAction('finish')">Finish</button>
+            </div>
+            <div class="col">
+              <button class="btn btn-info" onclick="performAction('evaluateWinner')">Evaluate Winner</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p id="errors" class="text-danger"></p>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script>
+  function getGame(gameid){
+    $.getJSON(`/api/games/${gameid}`, (response) => {
+      $('#gameId').text(response.id);
+      let span = '';
+      if(response.started){
+        if(response.ended){
+          span = '<span class="badge badge-primary">ENDED</span>'
+        }else{
+          span = '<span class="badge badge-warning">RUNNING</span>'
+        }
+      }else{
+        span = '<span class="badge badge-secondary">NOT STARTED</span>'
+      }
+      $('#gameStatus').append(span);
+      $('#gameTableBody').append(
+        ` <tr>
+            <td><strong>Prize</strong></td>
+            <td>${response.prize}</td>
+          </tr>
+          <tr>
+            <td><strong>Prize Image</strong></td>
+            <td>${response.prize_image}</td>
+          </tr>
+          <tr>
+            <td><strong>Start Date</strong></td>
+            <td>${response.begin_date}</td>
+          </tr>
+          <tr>
+            <td><strong>End Date</strong></td>
+            <td>${response.end_date}</td>
+          </tr>
+          <tr>
+            <td><strong>Players</strong></td>
+            <td>${response.players_count}</td>
+          </tr>
+          <tr>
+            <td><strong>Days to finish</strong></td>
+            <td>${response.days_to_finish}</td>
+          </tr>
+          <tr>
+            <td><strong>Winner</strong></td>
+            <td>${response.winner ? response.winner : ' - '}</td>
+          </tr>
+          `
+      );
+      $('#prizeImageContainer').append(`<img src="${response.prize_image}" alt="" style="width: 50%;">`);
+      $('#prizeImageForm').append(`
+        <form action="/admin/games/${getGameIdFromPath()}" method="POST" enctype="multipart/form-data">
+          <input type=file name=prizeimage id=prizeimage required> 
+          <input type=submit value="Update Image" class="btn btn-success btn-sm">
+        </form>`)
+    })
+  }
+
+  function getGameIdFromPath(){
+    let path = window.location.pathname.split('/');
+    let gameId = parseInt(path[path.length - 1]);
+    return gameId;
+  }
+
+  function performAction(action){
+    $.postJSON(`/api/games/${getGameIdFromPath()}`, {
+      action
+    }, (response) => {
+      if(response.success){
+        window.location.reload();
+      }else{
+        $('#errors').text(response.message);
+      }
+    })
+  }
+
+  getGame(getGameIdFromPath());
+</script>
+{% endblock %}

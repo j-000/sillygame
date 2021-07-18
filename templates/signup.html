@@ -1,0 +1,74 @@
+{% extends 'layout.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block css %}
+<style>
+  .card{
+    box-shadow: 0 10px 6px -6px #777;
+  }
+
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-md-6 m-auto">
+      <h2 class="text-center">Register</h2>
+      <div class="card">
+        <div class="card-body">
+          <form action="javascript:void(0)" id="signupForm">
+            <label for="name">Name</label>
+            <input required class="form-control mb-2" type="text" name="name" id="name">
+            <label for="email">Email</label>
+            <input required class="form-control mb-2" type="text" name="email" id="email">
+            <label for="password">Password</label>
+            <input required class="form-control mb-2" type="password" name="password" id="password">
+            <label for="confirm">Confirm</label>
+            <input required class="form-control mb-2" type="password" name="confirm" id="confirm">
+            <p><button class="btn btn-info" onclick="register()">Register</button></p>
+            <p class="text-danger" id="errors"></p>
+            <p class="text-success" id="success"></p>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+  function register(){
+    let name = $('#name').val();
+    let email = $('#email').val();
+    let password = $('#password').val();
+    let confirm = $('#confirm').val();
+    if(password != confirm){
+      $('#errors').text('Passwords don\'t match.')
+    }else{
+      if(name&&email&&password){
+        $.postJSON(
+          `${SERVER}/api/signup`, {
+            name, email, password
+          },
+          (response) => {
+            if(!response.success){
+              $('#errors').text(response.message);
+            }else{
+              $('#success').text(response.message);
+              clearForm('signupForm')
+              window.location.href = '/login'
+            }
+          }
+        )
+      }
+    }
+    setTimeout(() => {
+      $('#errors').text('');
+      $('#success').text('');
+    }, 3000);
+  }
+</script>
+{% endblock %}

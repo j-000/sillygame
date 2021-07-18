@@ -1,0 +1,94 @@
+{% extends 'layout.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block css %}
+<style>
+  .jumbotron{
+    background-color: ghostwhite;
+  }
+
+  .card{
+    box-shadow: 0 10px 6px -6px #777;
+  }
+
+  #join_button{
+    animation: animate_join_button infinite;
+    animation-duration: 2s;
+  }
+
+  @keyframes animate_join_button{
+    0% {
+      transform: scale(0.95);
+    }
+
+    50%{
+      transform: scale(1);
+      box-shadow: 0 10px 6px -6px #777;
+    }
+
+    100%{
+      transform: scale(0.95);
+    }
+  }
+
+  #waves{
+    width: 100%;
+  }
+
+</style>
+{% endblock %}
+
+{% block body %}
+<div class="container-fluid p-0">
+  <div class="row">
+    <div class="col">
+      <div class="jumbotron mb-0 pb-4">
+        <h1>SillyGames</h1>
+        <p class="lead">Join us! There are many prizes waiting to be won <strong>every week</strong>.</p>
+        <p class="lead">How do you play? Create an account, collect coins, enter the weekly draw and win.</p>
+        <div class="row text-center mt-5">
+          <div class="col">
+            <a id="join_button" href="{{ url_for('signup') }}" class="btn-lg btn btn-info">I want to join</a>
+          </div>
+          <div class="col">
+            <a href="{{ url_for('login') }}" class="btn-lg btn btn-outline-success">I have an account</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <svg id="waves" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320"><path fill="#f8f8ff" fill-opacity="1" d="M0,224L26.7,234.7C53.3,245,107,267,160,272C213.3,277,267,267,320,245.3C373.3,224,427,192,480,154.7C533.3,117,587,75,640,90.7C693.3,107,747,181,800,208C853.3,235,907,213,960,192C1013.3,171,1067,149,1120,133.3C1173.3,117,1227,107,1280,101.3C1333.3,96,1387,96,1413,96L1440,96L1440,0L1413.3,0C1386.7,0,1333,0,1280,0C1226.7,0,1173,0,1120,0C1066.7,0,1013,0,960,0C906.7,0,853,0,800,0C746.7,0,693,0,640,0C586.7,0,533,0,480,0C426.7,0,373,0,320,0C266.7,0,213,0,160,0C106.7,0,53,0,27,0L0,0Z"></path></svg>
+
+  <div class="row text-center">
+    <div class="col mb-5">
+      <h2 class="mb-4">Previous Winner</h2>
+      {% if previous_winner %}
+      <div class="card m-auto" style="width: 20rem;">
+        <div class="card-body text-center">
+          <h5 class="card-title"><i class="fas fa-medal text-success"></i> {{previous_winner.name}}</h5>
+          <img src="{{ url_for('static', filename=previous_game.prize_image) }}" alt="" class="card-img-top mb-3">
+          <h3 class="card-text">{{ previous_game.prize }}</h3>
+        </div>
+      </div>
+      {% else %}
+      {% endif %}
+    </div>
+    <div class="col mb-5">
+      <h2 class="mb-4">This week's prize</h2>
+      {% if current_game %}
+        <div class="card m-auto" style="width: 20rem;">
+          <div class="card-body">
+            <h3 class="card-title">{{ current_game.prize }}</h3>
+            <h4><span class="badge badge-warning">{{ current_game.get_days_until_end() }} days until draw</span></h4>
+            <img src="{{ url_for('static', filename=current_game.prize_image) }}" alt="" class="card-img-top mb-3 mt-3">
+          </div>
+        </div>
+      {% else %}
+      {% endif %}
+    </div>
+  </div>  
+</div>
+{% endblock %}
+
+{% block js %}{% endblock %}
