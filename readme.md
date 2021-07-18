@@ -1,8 +1,8 @@
 ## SillyGames
 
-Built with Construct 3, Javascript and Flask.
+Built with [Construct 3](https://www.construct.net/en), Javascript and [Flask](https://flask.palletsprojects.com/en/2.0.x/).
 
 ## Giff
-<img src="https://github.com/j-000/sillygame/blob/main/github/Animation.gif" alt="giff" width="340" height="180" border="10" /></a>
+<img src="https://github.com/j-000/sillygame/blob/main/github/Animation.gif" alt="giff" width="100%" />
 
 ## Features
